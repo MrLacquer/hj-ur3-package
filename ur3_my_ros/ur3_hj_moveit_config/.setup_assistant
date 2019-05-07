@@ -1,0 +1,11 @@
+moveit_setup_assistant_config:
+  URDF:
+    package: gripper_ur3
+    relative_path: urdf/ur3_ar10.xacro
+    xacro_args: "--inorder "
+  SRDF:
+    relative_path: config/ur3_ar10.srdf
+  CONFIG:
+    author_name: Hyeonjun
+    author_email: koreaphj@khu.ac.kr
+    generated_timestamp: 1556870336
