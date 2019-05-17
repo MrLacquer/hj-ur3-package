@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<launch>
+  <arg name="limited" default="true" doc="If true, limits joint range [-PI, PI] on all joints." />
+  <arg name="paused" default="false" doc="Starts gazebo in paused mode" />
+  <arg name="gui" default="true" doc="Starts gazebo gui" />
+  
+  <!-- startup simulated world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <!-- arg name="world_name" default="worlds/empty.world"/-->
+    <arg name="world_name" default="$(find ur3_hj2_moveit_config)/hj2_gazebo_urd435/my_world/my_grap.world"/>    
+    <arg name="paused" value="$(arg paused)"/>
+    <arg name="gui" value="$(arg gui)"/>
+  </include>
+
+  <!-- send robot urdf to param server -->
+  
+  <!-- include file="/home/asuspark/sim_ws/src/ur3_my_ros/ur3_hj_moveit_config/hj_gazebo/launch/ur3_upload.launch" -->
+  
+  <include file="$(find ur3_hj2_moveit_config)/hj2_gazebo_urd435/launch/ur3_d435_upload.launch">  <!-- PHJ editing -->
+    <arg name="limited" value="$(arg limited)"/>
+  </include>
+
+  <!-- push robot_description to factory and spawn robot in gazebo -->
+  <node name="spawn_gazebo_model" pkg="gazebo_ros" type="spawn_model" args="-urdf -param robot_description -model robot -z 0.5 " respawn="false" output="screen" />
+
+  <include file="$(find ur3_hj2_moveit_config)/hj2_gazebo_urd435/launch/controller_utils.launch"/> <!-- PHJ editing -->
+
+  <rosparam file="$(find ur3_hj2_moveit_config)/hj2_gazebo_urd435/controller/arm_controller_ur3.yaml" command="load"/> <!-- PHJ editing -->
+  <node name="arm_controller_spawner" pkg="controller_manager" type="controller_manager" args="spawn arm_controller" respawn="false" output="screen"/>
+
+</launch>
