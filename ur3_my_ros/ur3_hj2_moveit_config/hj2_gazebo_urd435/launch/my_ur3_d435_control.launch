@@ -24,7 +24,7 @@
     <arg name="max_payload"  value="$(arg max_payload)"/>
   </include>
 
-  <include file="$(find realsense2_camera)/launch/my_d435.launch"/>
+  <!-- include file="$(find realsense2_camera)/launch/my_d435.launch"/-->
 
   <!--include file="$(find ur10_rg2_moveit_config)/launch/ur10_moveit_planning_execution.launch"/-->
 

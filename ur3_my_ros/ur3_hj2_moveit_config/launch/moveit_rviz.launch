@@ -4,13 +4,32 @@
   <arg unless="$(arg debug)" name="launch_prefix" value="" />
   <arg     if="$(arg debug)" name="launch_prefix" value="gdb --ex run --args" />
 
-  <arg name="config" default="false" />
-  <arg unless="$(arg config)" name="command_args" value="" />
-  <arg     if="$(arg config)" name="command_args" value="-d $(find ur3_hj2_moveit_config)/launch/moveit.rviz" />
+  <arg name="marker_frame_id"     default="world"/>
+  <arg name="user_marker_size"	  default="5.0"/>
 
-  <node name="$(anon rviz)" launch-prefix="$(arg launch_prefix)" pkg="rviz" type="rviz" respawn="false"
-	args="$(arg command_args)" output="screen">
-    <rosparam command="load" file="$(find ur3_hj2_moveit_config)/config/kinematics.yaml"/>
+
+  <!-- realsense d435 -->
+  <include file="$(find realsense2_camera)/launch/my_d435.launch"/>
+
+  <!-- ar_marker pacakge -->
+  <node pkg="tf" type="static_transform_publisher" name="world_to_cam"
+      args="0.0 0.0 0.0 0.0 0.0 0.0 camera_bottom_screw_frame camera_link 10" />
+      <!-- args="x y z r p y parent_link_of_the_camera camera_link sample_rate" -->  
+  <include file="$(find ar_track_alvar)/launch/pr2_indiv_no_kinect.launch">
+    <arg name="marker_size" value="$(arg user_marker_size)" />
+    <arg name="max_new_marker_error" value="0.08" />
+    <arg name="max_track_error" value="0.2" />
+    <arg name="cam_image_topic" value="/camera/color/image_raw" />
+    <arg name="cam_info_topic" value="/camera/color/camera_info" />
+    <arg name="output_frame" value="$(arg marker_frame_id)" />
+  </include> 
+
+  <arg name="config" default="true" />
+  <arg unless="$(arg config)" name="command_args" value="" />
+  <arg     if="$(arg config)" name="command_args" value="-d $(find ur3_hj_moveit_config)/launch/moveit.rviz" />
+
+  <node name="$(anon rviz)" launch-prefix="$(arg launch_prefix)" pkg="rviz" type="rviz" respawn="false"	args="$(arg command_args)" output="screen">
+    <rosparam command="load" file="$(find ur3_hj_moveit_config)/config/kinematics.yaml"/>
   </node>
 
 </launch>

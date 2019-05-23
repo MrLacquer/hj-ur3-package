@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "browse": {
+                "databaseFilename": "",
+                "limitSymbolsToIncludedHeaders": true
+            },
+            "includePath": [
+                "/home/asuspark/sim_ws/devel/include",
+                "/home/asuspark/catkin_ws/devel/include",
+                "/opt/ros/kinetic/include",
+                "/home/asuspark/sim_ws/src/common-sensors/common_sensors/include",
+                "/home/asuspark/sim_ws/src/ros_tutorials_topic/include",
+                "/home/asuspark/sim_ws/src/ur10_rg2_ros/ur_modern_driver/include",
+                "/usr/include"
+            ],
+            "name": "Linux",
+            "intelliSenseMode": "gcc-x64",
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c11",
+            "cppStandard": "c++17"
+        }
+    ],
+    "version": 4
+}
