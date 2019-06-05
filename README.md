@@ -15,7 +15,7 @@ for backup repository
 ### update 
 - 2019.06.05 세번째 백업
     - inculde the ur_moveit rosnode packages.
-    - inculde the stookroom gazebo world[programming robots with ROS](https://github.com/Jpub/ROS)
+    - inculde the stookroom gazebo world [programming robots with ROS](https://github.com/Jpub/ROS)
     - inculde the ar_track_alvar pacakge.
     - inculde the ur3_bringup.launch in the "my_ur3_d435_control.launch"
 
