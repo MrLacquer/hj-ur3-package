@@ -1,6 +1,6 @@
 sensors:
   - sensor_plugin: occupancy_map_monitor/PointCloudOctomapUpdater
-    #point_cloud_topic: /output
+    #point_cloud_topic: /d435/depth/points
     point_cloud_topic: /output
     max_range: 1.5    
     point_subsample: 1
