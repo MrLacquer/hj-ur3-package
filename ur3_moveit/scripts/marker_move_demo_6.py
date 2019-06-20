@@ -1,5 +1,17 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
+
+'''
+      Autor: Hyeonjun Park
+      Date : 2019.06.20
+      coke can pick and place
+      two desk:
+      pick moition target marker: id9
+      place motion target marker: id10
+      id9 -> id10 move to using desired coordinate. not use searching
+      real robot test finished.
+''' 
+
 import sys, time
 import rospy
 import copy, math

@@ -18,15 +18,6 @@ import random
 from ar_track_alvar_msgs.msg import AlvarMarkers
 from std_srvs.srv import Empty
 
-# joint name, rostopic ehco /joint_states
-# look_object = self.robot_arm.get_current_joint_values()
-#      look_object[0] = shoulder_pan_joint
-#                 [1] = shoulder_lift_joint
-#                 [2] = elbow_joint
-#                 [3] = wrist_1_joint
-#                 [4] = wrist_2_joint
-#                 [5] = wrist_3_joint            
-
 GROUP_NAME_ARM = "manipulator"
 FIXED_FRAME = 'world'
 #GROUP_NAME_GRIPPER = "NAME OF GRIPPER"
@@ -79,8 +70,6 @@ class TestMove():
             self.trans = []
             self.rot = []
 
-            self.target_ar_id = 9
-
             self.calculed_coke_pose = Pose()
             #rospy.loginfo("Waiting for ar_pose_marker topic...")
             #rospy.wait_for_message('ar_pose_marker', AlvarMarkers)
@@ -110,7 +99,7 @@ class TestMove():
             
 
       def move_code(self):
-            #self.clear_octomap()
+            self.clear_octomap()
             planning_frame = self.robot_arm.get_planning_frame()
             print "========== plannig frame: ", planning_frame
 
@@ -121,26 +110,14 @@ class TestMove():
             print "INIT POSE: ", self.robot_arm.get_current_pose().pose.position
             self.robot_arm.go(marker_joint_goal, wait=True)
 
-      def move_moveit_setting_pose(self, pose_name):
-            if pose_name == "home":
-                  self.robot_arm.set_named_target("home")
-            elif pose_name == "zeros":
-                  self.robot_arm.set_named_target("zeros")
-            elif pose_name == "table":
-                  self.robot_arm.set_named_target("table")
-                  
-            #print "Press the Enter"
-            #raw_input()
-            self.robot_arm.go(wait=True)
-
-      def look_object_one_joint(self, joint_num, rad):
+      def look_object(self):
             
             look_object = self.robot_arm.get_current_joint_values()
             
             ## wrist3 현재 상태가 0도 인지, 360도인지에 따라 90도의 움직임을 -로 할지, + 할지 고려함
-            print "wrist3 joint value(deg, rad): ", math.degrees(look_object[joint_num]), look_object[joint_num]
+            print "wrist3 joint value(deg, rad): ", math.degrees(look_object[5]), look_object[5]
             #look_object[5] = math.radians(90)
-            look_object[joint_num] = rad
+            look_object[5] = 0
             '''
             if look_object[5] > abs(math.radians(180)):
                   if look_object[5] < 0:
@@ -150,11 +127,13 @@ class TestMove():
             else:
                   look_object[5] = look_object[5] - math.radians(90) # wrist3
             '''
-            print "wrist3 joint value(deg, rad): ", math.degrees(look_object[5]), look_object[5]            
+            print "wrist3 joint value(deg, rad): ", math.degrees(look_object[5]), look_object[5]
+            #look_object[3] = look_object[3] - (math.radians(00)) # wrist1
             self.robot_arm.go(look_object, wait=True)                 
 
             #look_object[5] = look_object[5] + (math.radians(90)) # wrist3
             #self.robot_arm.go(look_object, wait=True)                 
+
 
       def look_up_down(self):
             self.clear_octomap()
@@ -179,13 +158,14 @@ class TestMove():
             display_trajectory.trajectory.append(plan)
             
             display_trajectory_publisher.publish(display_trajectory);
+                
                        
       def plan_cartesian_path(self, x_offset, y_offset, z_offset, scale = 1.0):
             waypoints = []
             ii = 1
 
             self.wpose = self.robot_arm.get_current_pose().pose
-            #print "===== robot arm pose: ", self.wpose            
+            print "===== robot arm pose: ", self.wpose            
             self.wpose.position.x = (scale * self.wpose.position.x) + x_offset    #-0.10
             
             #print "self.wpose ", ii, ": [",self.wpose.position.x, self.wpose.position.y, self.wpose.position.z,"]"
@@ -200,43 +180,7 @@ class TestMove():
             waypoints.append(copy.deepcopy(self.wpose))
             ii += 1
 
-            #print "waypoints:", waypoints
-            (plan, fraction) = self.robot_arm.compute_cartesian_path(waypoints, 0.01, 0.0)
-
-            return plan, fraction
-
-      def plan_cartesian_x(self, x_offset, scale = 1.0):
-            waypoints = []
-
-            self.wpose = self.robot_arm.get_current_pose().pose
-            #print "===== robot arm pose: ", self.wpose            
-            self.wpose.position.x = (scale * self.wpose.position.x) + x_offset    #-0.10            
-            waypoints.append(copy.deepcopy(self.wpose))            
-            
-            (plan, fraction) = self.robot_arm.compute_cartesian_path(waypoints, 0.01, 0.0)
-
-            return plan, fraction
-
-      def plan_cartesian_y(self, y_offset, scale = 1.0):
-            waypoints = []
-
-            self.wpose = self.robot_arm.get_current_pose().pose
-            #print "===== robot arm pose: ", self.wpose            
-            self.wpose.position.y = (scale * self.wpose.position.y) + y_offset    #-0.10            
-            waypoints.append(copy.deepcopy(self.wpose))            
-            
-            (plan, fraction) = self.robot_arm.compute_cartesian_path(waypoints, 0.01, 0.0)
-
-            return plan, fraction
-      
-      def plan_cartesian_z(self, z_offset, scale = 1.0):
-            waypoints = []           
-
-            self.wpose = self.robot_arm.get_current_pose().pose
-            #print "===== robot arm pose: ", self.wpose            
-            self.wpose.position.z = (scale * self.wpose.position.z) + z_offset    #-0.10            
-            waypoints.append(copy.deepcopy(self.wpose))            
-            
+            print "waypoints:", waypoints
             (plan, fraction) = self.robot_arm.compute_cartesian_path(waypoints, 0.01, 0.0)
 
             return plan, fraction
@@ -245,15 +189,15 @@ class TestMove():
             group = self.robot_arm
             group.execute(plan, wait=True)
 
-      def ar_pose_subscriber(self):
+      def print_ar_pose(self):
             rospy.loginfo("Waiting for ar_pose_marker topic...")
             rospy.wait_for_message('ar_pose_marker', AlvarMarkers)
 
             rospy.Subscriber('ar_pose_marker', AlvarMarkers, self.ar_tf_listener)
             rospy.loginfo("Maker messages detected. Starting followers...")
 
-            #print "======= pos(meter): ", self.position_list
-            #print "======= orientation: ", self.orientation_list  
+            print "======= pos(meter): ", self.position_list
+            print "======= orientation: ", self.orientation_list  
 
       def go_to_move(self, scale = 1.0):        # 로봇 팔: 마커 밑에 있는 물체 쪽으로 움직이기
             #self.calculed_coke_pose = self.robot_arm.get_current_pose()
@@ -264,35 +208,20 @@ class TestMove():
             robot_base_offset = 0.873
             base_wrist2_offset = 0.1      #for avoiding link contact error
             
-            if self.target_ar_id == 9:
-                  print ">> robot arm plannig frame: \n", planning_frame
-                  print ">> move mode id: ", self.target_ar_id
-                  
-                  self.calculed_coke_pose.position.x = (scale * self.goal_x) # base_link to wrist2 x-offset
-                  self.calculed_coke_pose.position.y = (scale * self.goal_y) + coke_offset[1]
-                  #self.calculed_coke_pose.position.z = (scale * self.goal_z) + 0.72 + coke_offset# world to base_link z-offset
-                  self.calculed_coke_pose.position.z = (scale * self.goal_z) + robot_base_offset # world to base_link z-offset and coke can offset
-                  self.calculed_coke_pose.orientation = Quaternion(*quaternion_from_euler(3.14, 0, 1.57))
-
-                  print "========== coke_pose goal frame: ", self.calculed_coke_pose
-                  self.robot_arm.set_pose_target(self.calculed_coke_pose)
-
-
-            elif self.target_ar_id == 10:
-                  print ">> robot arm plannig frame: \n", planning_frame
-                  print ">> move mode id: ", self.target_ar_id
-                  
-                  self.calculed_coke_pose.position.x = (scale * self.goal_x) + coke_offset[1]
-                  self.calculed_coke_pose.position.y = (scale * self.goal_y) + 0
-                  self.calculed_coke_pose.position.z = (scale * self.goal_z) + robot_base_offset # world to base_link z-offset and coke can offset
-                  self.calculed_coke_pose.orientation = Quaternion(*quaternion_from_euler(3.14, 0, 0))
-                  print "========== coke_pose goal frame: ", self.calculed_coke_pose
-                  self.robot_arm.set_pose_target(self.calculed_coke_pose)
+            print "========== robot arm plannig frame: \n", planning_frame
+            
+            self.calculed_coke_pose.position.x = (scale * self.goal_x) + base_wrist2_offset # base_link to wrist2 x-offset
+            self.calculed_coke_pose.position.y = (scale * self.goal_y) + coke_offset[1]
+            #self.calculed_coke_pose.position.z = (scale * self.goal_z) + 0.72 + coke_offset# world to base_link z-offset
+            self.calculed_coke_pose.position.z = (scale * self.goal_z) + robot_base_offset # world to base_link z-offset and coke can offset
+            self.calculed_coke_pose.orientation = Quaternion(*quaternion_from_euler(0, 0, 1.54))
 
                                    
+            print "========== coke_pose goal frame: ", self.calculed_coke_pose
+            self.robot_arm.set_pose_target(self.calculed_coke_pose)
 
             tf_display_position = [self.calculed_coke_pose.position.x, self.calculed_coke_pose.position.y, self.calculed_coke_pose.position.z]      
-            tf_display_orientation = [self.calculed_coke_pose.orientation.x, self.calculed_coke_pose.orientation.y, self.calculed_coke_pose.orientation.z, self.calculed_coke_pose.orientation.w]
+            tf_display_orientation = [self.calculed_coke_pose.orientation.x, self.calculed_coke_pose.orientation.y, self.calculed_coke_pose.orientation.z, self.calculed_coke_pose.orientation.w]      
 
             ii = 0
             while ii < 5:
@@ -315,67 +244,21 @@ class TestMove():
             print "============ Press `Enter` to if plan is correct!! ..."
             raw_input()
             self.robot_arm.go(True)
-      
-      def go_to_desired_coordinate(self, pose_x, pose_y, pose_z, roll, pitch, yaw):
-            calculed_ar_id_10 = Pose()
-            #desired_goal_pose = [0.171, -0.113, 1.039]
-            #desired_goal_euler = [3.14, 0.17, 0]
-            desired_goal_pose = [pose_x, pose_y, pose_z]
-            desired_goal_euler = [roll, pitch, yaw]
-
-            Cplanning_frame = self.robot_arm.get_planning_frame()
-            print ">> current planning frame: \n", Cplanning_frame
-            
-            calculed_ar_id_10.position.x = desired_goal_pose[0] + 0.1
-            calculed_ar_id_10.position.y = desired_goal_pose[1]
-            calculed_ar_id_10.position.z = desired_goal_pose[2]
-            calculed_ar_id_10.orientation = Quaternion(*quaternion_from_euler(desired_goal_euler[0], desired_goal_euler[1], desired_goal_euler[2]))
-
-            print ">>> ar id 10 goal frame: ", desired_goal_pose
-            self.robot_arm.set_pose_target(calculed_ar_id_10)
-
-            tf_display_position = [calculed_ar_id_10.position.x, calculed_ar_id_10.position.y, calculed_ar_id_10.position.z]
-            tf_display_orientation = [calculed_ar_id_10.orientation.x, calculed_ar_id_10.orientation.y, calculed_ar_id_10.orientation.z, calculed_ar_id_10.orientation.w]
-
-            jj = 0
-            while jj < 5:
-                  jj += 1
-                  self.br.sendTransform(
-                        tf_display_position,
-                        tf_display_orientation,
-                        rospy.Time.now(),
-                        "goal_wpose",
-                        "world")
-                  rate.sleep()
-
-            ## ## ## show how to move on the Rviz
-            ar_id_10_waypoints = []
-            ar_id_10_waypoints.append(copy.deepcopy(calculed_ar_id_10))
-            (ar_id_10_plan, ar_id_10_fraction) = self.robot_arm.compute_cartesian_path(ar_id_10_waypoints, 0.01, 0.0)
-            self.display_trajectory(ar_id_10_plan)
-            ## ## ##
-
-            print "============ Press `Enter` to if plan is correct!! ..."
-            raw_input()
-            self.robot_arm.go(True)
-
 
       def ar_tf_listener(self, msg):
             try:
                   self.marker = msg.markers
-                  
                   ml = len(self.marker)
-                  target_start_point_id = self.target_ar_id
-                  #target_id = target_ar_id
+                  target_id = 9
                   #self.m_idd = self.marker[0].id  # 임시용
 
                   for ii in range(0, ml): # 0 <= ii < ml
                         self.m_idd = self.marker[ii].id
                         #print "checked all id: ", self.m_idd
-                        if self.m_idd != target_start_point_id:
+                        if self.m_idd != target_id:
                               pass
                               #target_id_flage = False
-                        elif self.m_idd == target_start_point_id:
+                        elif self.m_idd == target_id:
                               target_id_flage = True
                               target_id = self.m_idd
                               target_id_index = ii
@@ -409,84 +292,35 @@ class TestMove():
 
         
 if __name__=='__main__':
-      shoulder_pan_joint = 0
-      shoulder_lift_joint = 1
-      elbow_joint = 2
-      wrist_1_joint = 3
-      wrist_2_joint = 4
-      wrist_3_joint = 5
-      
       tm = TestMove()
       rate = rospy.Rate(10.0)
+
       tm.move_code()    # go to initial pose
+      
+
       time.sleep(1)
-      #tm.look_up_down()
+      ####tm.look_up_down()
       
       #print "============ Press `Enter` to if plan is correct!! ..."
       #raw_input()
       tm.go_to_move() 
+
+      tm.look_object() 
       
-      #tm.look_object_one_joint(wrist_3_joint, 0) 
       #x_offset = -0.1      y_offset = -0.0625      z_offset = -0.08
-      linear_path = [-0.0001, -0.0625, -0.08]
-      print ">> Linear path planning 01 - pick the object"
+      linear_path = [-0.1, -0.0625, -0.08]
+      print ">> Linear path planning 01"
       cartesian_plan, fraction = tm.plan_cartesian_path(linear_path[0], linear_path[1], linear_path[2]) # 모든 매개변수에 값을 줘야 함
       tm.display_trajectory(cartesian_plan)
       time.sleep(0.5)      
-      #print "Press the Enter"
-      #raw_input()
-      tm.execute_plan(cartesian_plan)
-
-      #x_offset = -0.1      y_offset = -0.0625      z_offset = -0.08
-      linear_path = [+0.2, -0.2, +0.2]
-      print ">> Linear path planning 02-z"
-      cartesian_plan, fraction = tm.plan_cartesian_z(linear_path[2]) # 모든 매개변수에 값을 줘야 함
-      tm.display_trajectory(cartesian_plan)
-      time.sleep(2)      
-      #print "Press the Enter"
-      #raw_input()
-      tm.execute_plan(cartesian_plan)
-
-      ''' 안쓸 꺼 같음 
-      print ">> Linear path planning 02-y"
-      cartesian_plan, fraction = tm.plan_cartesian_y(linear_path[1]) # 모든 매개변수에 값을 줘야 함
-      tm.display_trajectory(cartesian_plan)
-      time.sleep(0.5)      
-      #print "Press the Enter"
-      #raw_input()
-      #tm.execute_plan(cartesian_plan) 
-      '''
-
-      print ">> go to setting pose: home"      
-      setting_pose = "home"
-      tm.move_moveit_setting_pose(setting_pose)
-
-      ### test code. for go to ar id 10
-      ar_id10_goal_pose = [0.171, -0.113, 1.039]
-      ar_id10_goal_euler = [3.14, 0.17, 0]
-      
-      tm.go_to_desired_coordinate(ar_id10_goal_pose[0], ar_id10_goal_pose[1], ar_id10_goal_pose[2],
-                                    ar_id10_goal_euler[0], ar_id10_goal_euler[1], ar_id10_goal_euler[2])
-      ####
-
-      tm.target_ar_id = 10
-      tm.ar_pose_subscriber()
-      time.sleep(0.5)
-
-      tm.go_to_move()
-
-      #x_offset = -0.1      y_offset = -0.0625      z_offset = -0.08
-      linear_path = [-0.0625, 0.0001, -0.08]
-      print ">> Linear path planning 03-drop the object"
-      cartesian_plan, fraction = tm.plan_cartesian_path(linear_path[0], linear_path[1], linear_path[2]) # 모든 매개변수에 값을 줘야 함
-      tm.display_trajectory(cartesian_plan)
-      time.sleep(0.5)      
-      tm.execute_plan(cartesian_plan)
-
-      ### ### ###
-      print "Go to Init pose, Press the Enter"
+      print "Press the Enter"
       raw_input()
-      tm.move_code()    # go to initial pose
+      tm.execute_plan(cartesian_plan)
+
+      print "======= Press the Enter"
+      raw_input()
+
+      tm.move_code()
       
       #rospy.spin()
       #roscpp_shutdown()

@@ -1,5 +1,15 @@
 #!/usr/bin/env python
-# -*- coding: utf-8 -*- 
+# -*- coding: utf-8 -*-
+
+'''
+      Autor: Hyeonjun Park
+      Date : 2019.06.19
+      coke can pick and place
+      two desk:
+      pick moition target marker: id9
+      place motion target marker: id10
+      id9 -> id10 90 degree rotation is user order. not use searching
+''' 
 import sys, time
 import rospy
 import copy, math
@@ -120,18 +130,6 @@ class TestMove():
             marker_joint_goal = [-0.535054565144069, -2.009213503260451, 1.8350906250920112, -0.7794355413099039, -0.7980899690645948, 0.7782740454087982]
             print "INIT POSE: ", self.robot_arm.get_current_pose().pose.position
             self.robot_arm.go(marker_joint_goal, wait=True)
-
-      def move_moveit_setting_pose(self, pose_name):
-            if pose_name == "home":
-                  self.robot_arm.set_named_target("home")
-            elif pose_name == "zeros":
-                  self.robot_arm.set_named_target("zeros")
-            elif pose_name == "table":
-                  self.robot_arm.set_named_target("table")
-                  
-            #print "Press the Enter"
-            #raw_input()
-            self.robot_arm.go(wait=True)
 
       def look_object_one_joint(self, joint_num, rad):
             
@@ -292,7 +290,7 @@ class TestMove():
                                    
 
             tf_display_position = [self.calculed_coke_pose.position.x, self.calculed_coke_pose.position.y, self.calculed_coke_pose.position.z]      
-            tf_display_orientation = [self.calculed_coke_pose.orientation.x, self.calculed_coke_pose.orientation.y, self.calculed_coke_pose.orientation.z, self.calculed_coke_pose.orientation.w]
+            tf_display_orientation = [self.calculed_coke_pose.orientation.x, self.calculed_coke_pose.orientation.y, self.calculed_coke_pose.orientation.z, self.calculed_coke_pose.orientation.w]      
 
             ii = 0
             while ii < 5:
@@ -315,50 +313,6 @@ class TestMove():
             print "============ Press `Enter` to if plan is correct!! ..."
             raw_input()
             self.robot_arm.go(True)
-      
-      def go_to_desired_coordinate(self, pose_x, pose_y, pose_z, roll, pitch, yaw):
-            calculed_ar_id_10 = Pose()
-            #desired_goal_pose = [0.171, -0.113, 1.039]
-            #desired_goal_euler = [3.14, 0.17, 0]
-            desired_goal_pose = [pose_x, pose_y, pose_z]
-            desired_goal_euler = [roll, pitch, yaw]
-
-            Cplanning_frame = self.robot_arm.get_planning_frame()
-            print ">> current planning frame: \n", Cplanning_frame
-            
-            calculed_ar_id_10.position.x = desired_goal_pose[0] + 0.1
-            calculed_ar_id_10.position.y = desired_goal_pose[1]
-            calculed_ar_id_10.position.z = desired_goal_pose[2]
-            calculed_ar_id_10.orientation = Quaternion(*quaternion_from_euler(desired_goal_euler[0], desired_goal_euler[1], desired_goal_euler[2]))
-
-            print ">>> ar id 10 goal frame: ", desired_goal_pose
-            self.robot_arm.set_pose_target(calculed_ar_id_10)
-
-            tf_display_position = [calculed_ar_id_10.position.x, calculed_ar_id_10.position.y, calculed_ar_id_10.position.z]
-            tf_display_orientation = [calculed_ar_id_10.orientation.x, calculed_ar_id_10.orientation.y, calculed_ar_id_10.orientation.z, calculed_ar_id_10.orientation.w]
-
-            jj = 0
-            while jj < 5:
-                  jj += 1
-                  self.br.sendTransform(
-                        tf_display_position,
-                        tf_display_orientation,
-                        rospy.Time.now(),
-                        "goal_wpose",
-                        "world")
-                  rate.sleep()
-
-            ## ## ## show how to move on the Rviz
-            ar_id_10_waypoints = []
-            ar_id_10_waypoints.append(copy.deepcopy(calculed_ar_id_10))
-            (ar_id_10_plan, ar_id_10_fraction) = self.robot_arm.compute_cartesian_path(ar_id_10_waypoints, 0.01, 0.0)
-            self.display_trajectory(ar_id_10_plan)
-            ## ## ##
-
-            print "============ Press `Enter` to if plan is correct!! ..."
-            raw_input()
-            self.robot_arm.go(True)
-
 
       def ar_tf_listener(self, msg):
             try:
@@ -418,6 +372,7 @@ if __name__=='__main__':
       
       tm = TestMove()
       rate = rospy.Rate(10.0)
+
       tm.move_code()    # go to initial pose
       time.sleep(1)
       #tm.look_up_down()
@@ -425,8 +380,9 @@ if __name__=='__main__':
       #print "============ Press `Enter` to if plan is correct!! ..."
       #raw_input()
       tm.go_to_move() 
-      
+
       #tm.look_object_one_joint(wrist_3_joint, 0) 
+      
       #x_offset = -0.1      y_offset = -0.0625      z_offset = -0.08
       linear_path = [-0.0001, -0.0625, -0.08]
       print ">> Linear path planning 01 - pick the object"
@@ -438,35 +394,40 @@ if __name__=='__main__':
       tm.execute_plan(cartesian_plan)
 
       #x_offset = -0.1      y_offset = -0.0625      z_offset = -0.08
-      linear_path = [+0.2, -0.2, +0.2]
+      linear_path = [+0.1, -0.2, +0.2]
       print ">> Linear path planning 02-z"
       cartesian_plan, fraction = tm.plan_cartesian_z(linear_path[2]) # 모든 매개변수에 값을 줘야 함
       tm.display_trajectory(cartesian_plan)
-      time.sleep(2)      
+      time.sleep(0.5)      
       #print "Press the Enter"
       #raw_input()
       tm.execute_plan(cartesian_plan)
 
-      ''' 안쓸 꺼 같음 
       print ">> Linear path planning 02-y"
       cartesian_plan, fraction = tm.plan_cartesian_y(linear_path[1]) # 모든 매개변수에 값을 줘야 함
       tm.display_trajectory(cartesian_plan)
       time.sleep(0.5)      
       #print "Press the Enter"
       #raw_input()
-      #tm.execute_plan(cartesian_plan) 
+      tm.execute_plan(cartesian_plan) 
+
+      ''' 진짜 안 쓰는것
+      print ">> Linear path planning 02-x"
+      cartesian_plan, fraction = tm.plan_cartesian_x(linear_path[0]) # 모든 매개변수에 값을 줘야 함
+      tm.display_trajectory(cartesian_plan)
+      time.sleep(0.5)      
+      #print "Press the Enter"
+      #raw_input()
+      tm.execute_plan(cartesian_plan) 
       '''
+      #tm.move_code() # go to initial pose
 
-      print ">> go to setting pose: home"      
-      setting_pose = "home"
-      tm.move_moveit_setting_pose(setting_pose)
-
+      ####  test code. for turn 90 of       
+      tm.look_object_one_joint(shoulder_pan_joint, -3.14) 
+      tm.look_object_one_joint(wrist_2_joint, -1.56) 
+      tm.look_object_one_joint(wrist_1_joint, -3.11) 
       ### test code. for go to ar id 10
-      ar_id10_goal_pose = [0.171, -0.113, 1.039]
-      ar_id10_goal_euler = [3.14, 0.17, 0]
-      
-      tm.go_to_desired_coordinate(ar_id10_goal_pose[0], ar_id10_goal_pose[1], ar_id10_goal_pose[2],
-                                    ar_id10_goal_euler[0], ar_id10_goal_euler[1], ar_id10_goal_euler[2])
+      time.sleep(1)
       ####
 
       tm.target_ar_id = 10

@@ -1,0 +1,11 @@
+<!--- test for urdf collision gazebo -->
+
+<?xml version="1.0"?>
+<launch>
+  <arg name="limited" default="true" doc="If true, limits joint range [-PI, PI] on all joints." />
+  
+  <!-- 
+  <param unless="$(arg limited)" name="robot_description" command="$(find xacro)/xacro - -inorder '$(find ur_description)/urdf/ur3_robot.urdf.xacro'" /> 
+  -->  
+  <param if="$(arg limited)" name="robot_description" command="$(find xacro)/xacro.py $(find gripper_ur3)/urdf/ur3_hand_d435.xacro"/>
+</launch>

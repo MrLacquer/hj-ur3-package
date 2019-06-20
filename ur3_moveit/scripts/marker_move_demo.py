@@ -163,11 +163,11 @@ if __name__=='__main__':
 
     #print "============ Press `Enter` to plan and display a Cartesian path ..."
     #raw_input()
-      cartesian_plan, fraction = tm.plan_cartesian_path()
+      #cartesian_plan, fraction = tm.plan_cartesian_path()
 
     #print "============ Press `Enter` to execute a saved path ..."
     #raw_input()
-      tm.execute_plan(cartesian_plan)
+      #tm.execute_plan(cartesian_plan)
 
       rospy.spin()
       roscpp_shutdown()

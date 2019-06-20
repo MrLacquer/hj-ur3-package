@@ -1,0 +1,30 @@
+{
+  "configurations": [
+    {
+      "browse": {
+        "databaseFilename": "",
+        "limitSymbolsToIncludedHeaders": true
+      },
+      "includePath": [
+        "/home/asuspark/sim_ws/devel/include",
+        "/home/asuspark/catkin_ws/devel/include",
+        "/opt/ros/kinetic/include",
+        "/home/asuspark/catkin_ws/src/realsense-ros/ddynamic_reconfigure/include",
+        "/home/asuspark/catkin_ws/src/learning_tf/include",
+        "/home/asuspark/catkin_ws/src/ros-moveit-arm/moveit_plugin/include",
+        "/home/asuspark/catkin_ws/src/ros-moveit-arm/my_arm_xacro/include",
+        "/home/asuspark/catkin_ws/src/octomap_mapping/octomap_server/include",
+        "/home/asuspark/catkin_ws/src/open_manipulator/open_manipulator_moveit/include",
+        "/home/asuspark/catkin_ws/src/realsense-ros/realsense2_camera/include",
+        "/home/asuspark/catkin_ws/src/turtlebot3_simulations/turtlebot3_fake/include",
+        "/home/asuspark/catkin_ws/src/turtlebot3_simulations/turtlebot3_gazebo/include",
+        "/home/asuspark/catkin_ws/src/turtlebot3/turtlebot3_slam/include",
+        "/home/asuspark/catkin_ws/src/ur3_moveit/include",
+        "/home/asuspark/catkin_ws/src/universal_robot/ur_kinematics/include",
+        "/home/asuspark/catkin_ws/src/ur3_my_ros/ur_modern_driver/include",
+        "/usr/include"
+      ],
+      "name": "Linux"
+    }
+  ]
+}

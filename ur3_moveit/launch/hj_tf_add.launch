@@ -1,0 +1,5 @@
+  <launch>
+      
+      <node pkg="ur3_moveit" type="tf_adding.py" name="tf_adding" />
+      
+  </launch>
