@@ -29,6 +29,15 @@ for backup repository
         - test code(node) name is ur_marker_test.py
     - update the stookroom gazebo world. 
     
+### update 
+- 2019.07.15 다섯번째 백업
+    - update the hj_hand communication python code
+    ```
+    pc +++ serial2usb module +++ bluetooth(M)
+        <----->
+            bluetooth(S) +++ stm32f303
+    ```
+    
 
 ### How to start?
 ```
