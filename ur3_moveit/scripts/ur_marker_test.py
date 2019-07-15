@@ -7,6 +7,8 @@ import tf
 import moveit_msgs.msg
 from math import pi
 
+import serial
+
 from moveit_commander import RobotCommander, MoveGroupCommander
 from moveit_commander import PlanningSceneInterface, roscpp_initialize, roscpp_shutdown
 from geometry_msgs.msg import *
@@ -30,6 +32,33 @@ from std_srvs.srv import Empty
 GROUP_NAME_ARM = "manipulator"
 FIXED_FRAME = 'world'
 #GROUP_NAME_GRIPPER = "NAME OF GRIPPER"
+
+class STM_serial():
+      def __init__(self):
+            self.rx_data = 0
+            self.tx_data = 0
+            self.PORT = '/dev/ttyUSB0'
+            self.BaudRate = 115200
+        
+            #print 'serial', serial.__version__
+            self.ARD= serial.Serial(self.PORT, self.BaudRate)
+
+            self.ii = 0 
+
+        
+
+      def send_signal(self, hj_order):
+            #A = [0x01, 0x02, 0x03, 0x04, 0x05]
+            start = '2'
+            stop = '3'
+
+            if hj_order == 1:                
+                  print "start list: ", start
+                  self.ARD.write(start)    # list만 가능
+            elif hj_order == 0:
+                  print "stop list: ", stop
+                  self.ARD.write(stop)    # list만 가능
+
 
 class TestMove():
 
@@ -417,6 +446,8 @@ if __name__=='__main__':
       wrist_3_joint = 5
       
       tm = TestMove()
+      stm_ser = STM_serial()
+
       rate = rospy.Rate(10.0)
       tm.move_code()    # go to initial pose
       time.sleep(1)
@@ -437,6 +468,12 @@ if __name__=='__main__':
       #raw_input()
       tm.execute_plan(cartesian_plan)
 
+
+      ###### serial test ######
+      stm_ser.send_signal(1)
+      time.sleep(5)
+      #########################
+
       #x_offset = -0.1      y_offset = -0.0625      z_offset = -0.08
       linear_path = [+0.2, -0.2, +0.2]
       print ">> Linear path planning 02-z"
@@ -446,6 +483,7 @@ if __name__=='__main__':
       #print "Press the Enter"
       #raw_input()
       tm.execute_plan(cartesian_plan)
+
 
       ''' 안쓸 꺼 같음 
       print ">> Linear path planning 02-y"
@@ -482,8 +520,15 @@ if __name__=='__main__':
       tm.display_trajectory(cartesian_plan)
       time.sleep(0.5)      
       tm.execute_plan(cartesian_plan)
-
       ### ### ###
+      
+      ###### serial test ######
+      stm_ser.send_signal(0)
+      time.sleep(5)
+      #########################
+
+
+
       print "Go to Init pose, Press the Enter"
       raw_input()
       tm.move_code()    # go to initial pose
