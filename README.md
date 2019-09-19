@@ -71,6 +71,10 @@ $ roslaunch ur3_hj3_moveit_config moveit_rviz.launch
 
 $ rosrun my_pcl_tutorial example input:=/camera/depth/color/points
 $ rosrun ur3_moveit marker_move_demo_6.py
+
+or 
+
+$ rosrun ur3_moveit ur_marker_test.py
 ```
 
     
