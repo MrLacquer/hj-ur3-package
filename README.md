@@ -44,10 +44,18 @@ for backup repository
 Before simulation setting:
 registration the "GAZEBO_MODEL_PATH env." [ref. link](https://github.com/Jpub/ROS/tree/master/stockroom_bot)
 
-$ export GAZEBO_MODEL_PATH=${HOME}/ catkin_ws/src/stockroom_bot/models
+$ export GAZEBO_MODEL_PATH=${HOME}/catkin_ws/src/stockroom_bot/models
+
+or
+
+$ export GAZEBO_MODEL_PATH=${HOME}/catkin_ws/src/hj-ur3-package/ur3_my_ros/ur3_hj3_moveit_config/hj3_gazebo_urhand/models
 
 Simulation:
 $ roslaunch ur3_hj3_moveit_config ur3_stockroom.launch
+
+with hammer simulation
+$ roslaunch ur3_hj3_moveit_config ur3_hammer_stockroom.launch
+
 $ roslaunch ur3_hj3_moveit_config ur3_hj3_moveit_planning_execution.launch sim:=true
 $ roslaunch ur3_hj3_moveit_config moveit_rviz_sim.launch
 

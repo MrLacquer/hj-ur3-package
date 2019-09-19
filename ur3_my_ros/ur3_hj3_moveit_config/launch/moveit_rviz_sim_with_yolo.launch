@@ -20,10 +20,17 @@
     <arg name="output_frame" value="$(arg marker_frame_id)" />
   </include> 
 
+  <!-- DARKNET--> 
+   <include file="$(find hj_object_detect)/launch/hj_object_detect.launch">
+      <arg name="sim" value="true"/>
+   </include>
+
+
 
   <arg name="config" default="true" />
   <arg unless="$(arg config)" name="command_args" value="" />
   <arg     if="$(arg config)" name="command_args" value="-d $(find ur3_hj3_moveit_config)/config/moveit_rviz_yolo.rviz" />
+
 
   <node name="$(anon rviz)" launch-prefix="$(arg launch_prefix)" pkg="rviz" type="rviz" respawn="false"
 	args="$(arg command_args)" output="screen">
