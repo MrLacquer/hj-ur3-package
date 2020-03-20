@@ -254,7 +254,15 @@
 
     <include>
         <uri>model://hammer</uri>
-        <pose>0.0 1.5 0.80 0 0 0</pose>
+        <pose>0.0 1.5 0.75 0 0 0</pose>        
+    </include> 
+    <include>
+        <uri>model://plier</uri>
+        <pose>-0.08 1.48 0.75 0 0 0</pose>        
+    </include> 
+    <include>
+        <uri>model://plier-16</uri>
+        <pose>0.03 1.35 0.60 0 0 0</pose>        
     </include> 
     
   
