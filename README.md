@@ -1,10 +1,5 @@
-<<<<<<< Updated upstream
-﻿# This is test
-
-=======
 ﻿# hj-ur3-package
 for backup repository
->>>>>>> Stashed changes
 
 
 ### update
